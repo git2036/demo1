@@ -17,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/queries")
 public class QueryController {
 
-    private static final Logger logger = LoggerFactory.getLogger(QueryController.class);
+//    private static final Logger logger = LoggerFactory.getLogger(QueryController.class);
 
     @Autowired
     private QueryService queryService;
