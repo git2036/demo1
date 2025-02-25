@@ -7,15 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data//生成getter、setter方法
-@NoArgsConstructor//生成无参构造方法
-@AllArgsConstructor//生成全参构造方法
+@Data//生成getter、setter方法、toString方法、equals方法、hashCode方法
 @JsonIgnoreProperties(ignoreUnknown = true)//忽略未知属性
 public class ReportTemplate {
     private Integer templateID;
     private String templateName;
     private Integer dataSourceID;
+    private String TemplateCreator;
     private String querySql;
-    private List<ColumnConfig> templateConfig;
-    private String templateStart;
+    private String templateConfig;
+    private String templateState;
 }

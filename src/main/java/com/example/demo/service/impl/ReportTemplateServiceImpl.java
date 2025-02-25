@@ -34,4 +34,10 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
         int rows = reportTemplateMapper.deleteReportTemplateById(id);
         return rows > 0;
     }
+
+    @Override
+    public boolean updateReportTemplate(int id, boolean status) {
+        int rows = reportTemplateMapper.updateReportTemplate(id);
+        return rows > 0;
+    }
 }

@@ -18,4 +18,8 @@ public interface ReportTemplateMapper {
 
     @Delete("DELETE FROM reporttemplates WHERE TemplateID = #{id}")
     int deleteReportTemplateById(int id);
+
+    //更新TemplateName templateState
+    @Update("UPDATE reporttemplates SET TemplateName = #{templateName}, TemplateState = #{templateState} WHERE TemplateID = #{id}")
+    int updateReportTemplate(int id);
 }

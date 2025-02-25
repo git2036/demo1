@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.pojo.ReportTemplate;
 import com.example.demo.pojo.Result;
 import com.example.demo.service.ReportTemplateService;
-import com.example.demo.service.impl.ReportTemplateServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +12,12 @@ import java.util.List;
 public class ReportTemplateController {
 
     // 注入ReportTemplateService接口的实现类
-    private final ReportTemplateService reportTemplateService = new ReportTemplateServiceImpl();
+    private final ReportTemplateService reportTemplateService;
+
+    // 通过构造函数注入ReportTemplateService
+    public ReportTemplateController(ReportTemplateService reportTemplateService) {
+        this.reportTemplateService = reportTemplateService;
+    }
 
     // 保存报表模板
     @PostMapping("/save")
@@ -33,7 +37,9 @@ public class ReportTemplateController {
     @GetMapping("/getAll")
     public Result getAllReportTemplates() {
         // 调用ReportTemplateService的getAllReportTemplates方法获取所有报表模板
-        return Result.success(reportTemplateService.getAllReportTemplates());
+        List<ReportTemplate> reportTemplates = reportTemplateService.getAllReportTemplates();
+//        System.out.println(reportTemplates);
+        return Result.success(reportTemplates);
     }
 
     // 根据ID获取报表模板
@@ -57,4 +63,17 @@ public class ReportTemplateController {
         }
     }
 
+    // 根据ID更新报表模板信息
+    @PutMapping("/update/{id}")
+    public Result updateReportTemplate(@PathVariable("id") int id, @RequestParam("status") boolean status) {
+        // 调用ReportTemplateService的updateReportTemplateStatus方法根据ID更新报表是否启用状态
+        boolean isSuccess = reportTemplateService.updateReportTemplate(id, status);
+        if (isSuccess) {
+            // 更新成功返回成功信息
+            return Result.success("报表模板状态更新成功");
+        } else {
+            // 更新失败返回失败信息
+            return Result.error("报表模板状态更新失败");
+        }
+    }
 }

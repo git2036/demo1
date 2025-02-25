@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/queries")
 public class QueryController {
 
     private static final Logger logger = LoggerFactory.getLogger(QueryController.class);
@@ -23,7 +23,7 @@ public class QueryController {
     private QueryService queryService;
 
     // 执行查询
-    @PostMapping("/execute-query")
+    @PostMapping("/executeQuery")
     public Result executeQuery(@RequestBody ExecuteQueryRequest request) {
         if (request.getDataSourceId() == null) {
             return Result.error("数据源ID不能为空");
