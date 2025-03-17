@@ -22,6 +22,7 @@ public class ReportTemplateController {
     // 保存报表模板
     @PostMapping("/save")
     public Result saveReportTemplate(@RequestBody ReportTemplate reportTemplate) {
+        System.out.println(reportTemplate);
         // 调用ReportTemplateService的saveReportTemplate方法保存报表模板
         boolean isSuccess = reportTemplateService.saveReportTemplate(reportTemplate);
         if (isSuccess) {

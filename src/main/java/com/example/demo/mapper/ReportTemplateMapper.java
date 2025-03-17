@@ -7,7 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface ReportTemplateMapper {
-    @Insert("INSERT INTO reporttemplates (TemplateName, DataSourceID, QuerySql, TemplateConfig) VALUES (#{templateName}, #{dataSourceID}, #{querySql}, #{templateConfig})")
+    //插入 TemplateName DataSourceID TemplateCreator QuerySql TemplateConfig TemplateState
+    @Insert("INSERT INTO reporttemplates (TemplateName, DataSourceID, TemplateCreator, QuerySql, TemplateConfig, TemplateState) VALUES (#{templateName}, #{dataSourceID}, #{templateCreator}, #{querySql}, #{templateConfig}, #{templateState})")
     int insertReportTemplate(ReportTemplate reportTemplate);
 
     @Select("SELECT * FROM reporttemplates")
