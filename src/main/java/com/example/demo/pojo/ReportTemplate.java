@@ -13,8 +13,9 @@ public class ReportTemplate {
     private Integer templateID;
     private String templateName;
     private Integer dataSourceID;
-    private String TemplateCreator;
+    private String templateCreator;
     private String querySql;
     private String templateConfig;
     private String templateState;
+
 }
