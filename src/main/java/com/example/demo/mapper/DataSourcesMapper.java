@@ -32,4 +32,8 @@ public interface DataSourcesMapper{
     //根据 dataSourceID 更新数据源
     @Update("update datasources set dataSourceName=#{dataSourceName},dataSourceType=#{dataSourceType},connectionInfo=#{connectionInfo},dataSourceUsername=#{dataSourceUsername},dataSourcePassword=#{dataSourcePassword} where DataSourceID=#{id}")
     void updateDataSource(Integer id, String dataSourceName, String dataSourceType, String connectionInfo, String dataSourceUsername, String dataSourcePassword);
+
+    //根据 dataSourceID 查找数据源
+    @Select("select * from datasources where DataSourceID=#{dataSourceID}")
+    DataSources findByDataSourceID(Integer dataSourceID);
 }
