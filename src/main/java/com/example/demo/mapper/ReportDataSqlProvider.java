@@ -1,21 +1,30 @@
 package com.example.demo.mapper;
 
 import com.example.demo.pojo.ReportDataItem;
+import com.example.demo.config.SqlParser;
+import com.example.demo.service.ReportTemplateService; // 假设存在该服务类获取报表模板信息
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 // 动态 SQL 提供类
+@Component
 public class ReportDataSqlProvider {
 
+    @Autowired
+    private ReportTemplateService reportTemplateService;
+
     public String insertReportData(ReportDataItem reportDataItem) {
-        StringBuilder sql = new StringBuilder("INSERT INTO report_data (template_id");
+        int templateId = reportDataItem.getTemplateId();
+        String tableName = getTableNameFromTemplate(templateId);
+
+        StringBuilder sql = new StringBuilder("INSERT INTO ").append(tableName).append(" (template_id");
         StringBuilder values = new StringBuilder("VALUES (#{templateId}");
 
-        if (reportDataItem.getData() != null && !reportDataItem.getData().isEmpty()) {
-            for (Map.Entry<String, Object> entry : reportDataItem.getData().entrySet()) {
-                sql.append(", ").append(entry.getKey());
-                values.append(", #{data.").append(entry.getKey()).append("}");
-            }
+        for (Map.Entry<String, Object> entry : reportDataItem.getData().entrySet()) {
+            sql.append(", ").append(entry.getKey());
+            values.append(", #{data.").append(entry.getKey()).append("}");
         }
 
         sql.append(") ").append(values).append(")");
@@ -23,11 +32,10 @@ public class ReportDataSqlProvider {
     }
 
     public String updateReportData(ReportDataItem reportDataItem) {
-        if (reportDataItem.getData() == null || reportDataItem.getData().isEmpty()) {
-            // 可以选择抛出异常或者返回空字符串
-            throw new IllegalArgumentException("No data to update");
-        }
-        StringBuilder sql = new StringBuilder("UPDATE report_data SET ");
+        int templateId = reportDataItem.getTemplateId();
+        String tableName = getTableNameFromTemplate(templateId);
+
+        StringBuilder sql = new StringBuilder("UPDATE ").append(tableName).append(" SET ");
         StringBuilder conditions = new StringBuilder(" WHERE template_id = #{templateId}");
 
         int index = 0;
@@ -44,36 +52,46 @@ public class ReportDataSqlProvider {
     }
 
     public String deleteReportData(int templateId, Map<String, Object> condition) {
-        StringBuilder sql = new StringBuilder("DELETE FROM report_data WHERE template_id = ").append(templateId);
+        String tableName = getTableNameFromTemplate(templateId);
 
-        if (condition != null && !condition.isEmpty()) {
-            int index = 0;
-            for (Map.Entry<String, Object> entry : condition.entrySet()) {
-                if (index > 0) {
-                    sql.append(" AND ");
-                }
-                sql.append(entry.getKey()).append(" = ").append(entry.getValue());
-                index++;
+        StringBuilder sql = new StringBuilder("DELETE FROM ").append(tableName).append(" WHERE template_id = ").append(templateId);
+
+        int index = 0;
+        for (Map.Entry<String, Object> entry : condition.entrySet()) {
+            if (index > 0) {
+                sql.append(" AND ");
             }
+            sql.append(entry.getKey()).append(" = ").append(entry.getValue());
+            index++;
         }
 
         return sql.toString();
     }
 
     public String selectReportData(int templateId, Map<String, Object> condition) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM report_data WHERE template_id = ").append(templateId);
+        String tableName = getTableNameFromTemplate(templateId);
 
-        if (condition != null && !condition.isEmpty()) {
-            int index = 0;
-            for (Map.Entry<String, Object> entry : condition.entrySet()) {
-                if (index > 0) {
-                    sql.append(" AND ");
-                }
-                sql.append(entry.getKey()).append(" = ").append(entry.getValue());
-                index++;
+        StringBuilder sql = new StringBuilder("SELECT * FROM ").append(tableName).append(" WHERE template_id = ").append(templateId);
+
+        int index = 0;
+        for (Map.Entry<String, Object> entry : condition.entrySet()) {
+            if (index > 0) {
+                sql.append(" AND ");
             }
+            sql.append(entry.getKey()).append(" = ").append(entry.getValue());
+            index++;
         }
 
         return sql.toString();
+    }
+
+    private String getTableNameFromTemplate(int templateId) {
+        // 根据 templateId 获取报表模板信息
+        com.example.demo.pojo.ReportTemplate reportTemplate = reportTemplateService.getReportTemplateById(templateId);
+        if (reportTemplate != null) {
+            String querySql = reportTemplate.getQuerySql();
+            return SqlParser.getTableNameFromSql(querySql);
+        }
+        return "report_data"; // 默认表名
     }
 }
