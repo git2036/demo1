@@ -41,4 +41,7 @@ public class ReportGeneratorController {
             return Result.error("Failed to generate report data: " + e.getMessage());
         }
     }
+
+    //根据前端传入的字段信息生成报表数据
+
 }

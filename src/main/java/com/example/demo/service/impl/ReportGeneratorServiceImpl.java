@@ -16,8 +16,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 // 标记为 Spring 的服务类，实现 ReportGeneratorService 接口
 @Service
 public class ReportGeneratorServiceImpl implements ReportGeneratorService {
@@ -34,9 +33,6 @@ public class ReportGeneratorServiceImpl implements ReportGeneratorService {
     public List<Map<String, Object>> generateReportData(int templateId) {
         // 根据模板 ID 从数据库中获取报表模板信息
         ReportTemplate reportTemplate = reportTemplateMapper.getReportTemplateById(templateId);
-
-        System.out.println(reportTemplate);
-
         // 如果报表模板信息不存在，抛出运行时异常
         if (reportTemplate == null) {
             throw new RuntimeException("Report template not found");
@@ -44,8 +40,6 @@ public class ReportGeneratorServiceImpl implements ReportGeneratorService {
 
         // 根据报表模板中的数据源 ID 从数据库中获取数据源信息
         DataSources dataSource = dataSourcesMapper.findByDataSourceID(reportTemplate.getDataSourceID());
-        System.out.println(dataSource);
-
         // 如果数据源信息不存在，抛出运行时异常
         if (dataSource == null) {
             throw new RuntimeException("Data source not found");
@@ -63,7 +57,6 @@ public class ReportGeneratorServiceImpl implements ReportGeneratorService {
             // 解析报表模板的配置信息，获取需要展示的字段列表
             List<String> fields = parseTemplateConfig(reportTemplate.getTemplateConfig());
             System.out.println(fields);
-            // 解析结果集，获取查询结果的列名列表
 
             // 用于存储查询结果的行数据
             List<Map<String, Object>> rows = new ArrayList<>();
@@ -90,19 +83,19 @@ public class ReportGeneratorServiceImpl implements ReportGeneratorService {
     private List<String> parseTemplateConfig(String templateConfig) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            List<List<Map<String, String>>> configList = objectMapper.readValue(templateConfig, new TypeReference<List<List<Map<String, String>>>>() {});
+            // 修改 TypeReference 为 List<Map<String, String>>
+            List<Map<String, String>> configList = objectMapper.readValue(templateConfig, new TypeReference<List<Map<String, String>>>() {});
             List<String> fields = new ArrayList<>();
-            for (List<Map<String, String>> innerList : configList) {
-                for (Map<String, String> map : innerList) {
-                    if (map.containsKey("prop")) {
-                        fields.add(map.get("prop"));
-                    }
+            for (Map<String, String> map : configList) {
+                if (map.containsKey("prop")) {
+                    fields.add(map.get("prop"));
                 }
             }
-            System.out.println(fields);
             return fields;
         } catch (JsonProcessingException e) {
-//            logger.error("Failed to parse template config: {}", templateConfig, e);
+            // 记录日志
+            System.err.println("Failed to parse template config: " + templateConfig);
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }
